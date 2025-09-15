@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # Main PostgreSQL database for your application data
+  main-db:
+    image: postgres:15
+    container_name: hasura-main-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: maindb
+      POSTGRES_USER: hasuraMainAdmin
+      POSTGRES_PASSWORD: main_password
+    volumes:
+      - main_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - hasura-network
+
+  # PostgreSQL database for Hasura metadata
+  metadata-db:
+    image: postgres:15
+    container_name: hasura-metadata-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: metadatadb
+      POSTGRES_USER: hasuraMetadataAdmin
+      POSTGRES_PASSWORD: metadata_password
+    volumes:
+      - metadata_db_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - hasura-network
+
+  # Hasura GraphQL Engine
+  hasura:
+    image: hasura/graphql-engine:v2.32.0
+    container_name: hasura-engine
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - main-db
+      - metadata-db
+    environment:
+      # Connect to the metadata database
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://hasuraMetadataAdmin:metadata_password@metadata-db:5432/metadatadb
+      
+      # Connect to the main database
+      HASURA_GRAPHQL_DATABASE_URL: postgres://hasuraMainAdmin:main_password@main-db:5432/maindb
+      
+      # Enable the console (UI)
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      
+      # Enable debugging (optional)
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      
+      # Admin secret for securing the endpoint (highly recommended for production)
+      HASURA_GRAPHQL_ADMIN_SECRET: myadminsecret
+      
+      # Enable unauthorized access (optional - disable for production)
+      # HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
+    networks:
+      - hasura-network
+
+volumes:
+  main_db_data:
+  metadata_db_data:
+
+networks:
+  hasura-network:
+    driver: bridge
