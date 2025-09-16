@@ -35,7 +35,7 @@ services:
 
   # Hasura GraphQL Engine
   hasura:
-    image: hasura/graphql-engine:v2.32.0
+    image: hasura/graphql-engine:v2.48.0
     container_name: hasura-engine
     restart: unless-stopped
     ports:
@@ -44,23 +44,130 @@ services:
       - main-db
       - metadata-db
     environment:
-      # Connect to the metadata database
+
+      # Database Connection ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+      # Connect to the metadata database through DB URL
       HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://hasuraMetadataAdmin:metadata_password@metadata-db:5432/metadatadb
       
-      # Connect to the main database
+      # Connect to the main database through DB URL
       HASURA_GRAPHQL_DATABASE_URL: postgres://hasuraMainAdmin:main_password@main-db:5432/maindb
+
+      # Connect to the Read replica database via URLs for load balancing
+      # HASURA_GRAPHQL_READ_REPLICA_URLS: postgres://<username>:<password>@<DB_HOST>:<DB_PORT>/<DB_NAME>
       
-      # Enable the console (UI)
+      # Server Configuration ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+      # Port to run server on (default: 8080)
+      # HASURA_GRAPHQL_SERVER_PORT: 8080
+
+      # Host to bind to (default: 0.0.0.0)
+      # HASURA_GRAPHQL_SERVER_HOST: 
+
+      # Enable the console (UI) - admin console (true/false)
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
-      
-      # Enable debugging (optional)
-      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
-      
+
+      # Custom directory for console assets
+      # HASURA_GRAPHQL_CONSOLE_ASSETS_DIR:
+
+      # Authentication & Security ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       # Admin secret for securing the endpoint (highly recommended for production)
       HASURA_GRAPHQL_ADMIN_SECRET: myadminsecret
+
+      # URL for webhook authentication
+      # HASURA_GRAPHQL_AUTH_HOOK: 
+
+      # HTTP method for auth hook (GET/POST)
+      # HASURA_GRAPHQL_AUTH_HOOK_MODE: 
+
+      # JWT configuration (JSON format)
+      # HASURA_GRAPHQL_JWT_SECRET: 
+
+      # Enable unauthorized access (optional - disable for production) - mention role name as value
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
+
+      # [Deprecated] Use admin secret instead
+      # HASURA_GRAPHQL_ACCESS_KEY: 
+
+      # CORS & Headers ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      # CORS allowed domains
+      # HASURA_GRAPHQL_CORS_DOMAIN: 
+
+      # Disable CORS (true/false)
+      # HASURA_GRAPHQL_DISABLE_CORS: 
       
-      # Enable unauthorized access (optional - disable for production)
-      # HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
+      # Allowed origins for CORS
+      # HASURA_GRAPHQL_ALLOWED_ORIGINS: 
+
+      # Custom allowed headers
+      # HASURA_GRAPHQL_ALLOWED_HEADERS: 
+
+      # Performance & Limits ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      # Enable development mode (true/false)
+      # HASURA_GRAPHQL_DEV_MODE: 
+
+      # Transaction isolation level
+      # HASURA_GRAPHQL_TX_ISOLATION: 
+
+      # Maximum database connections
+      # HASURA_GRAPHQL_MAX_CONNECTIONS: 
+
+      # Connection lifetime in seconds
+      # HASURA_GRAPHQL_PG_CONN_LIFETIME: 
+
+      # Query plan cache size
+      # HASURA_GRAPHQL_QUERY_PLAN_CACHE_SIZE: 
+
+      # Logging & Monitoring ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      # Enable debugging (optional) : Comma-separated log types (http, webhook, websocket, etc.)
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+
+      # Log level (debug, info, warn, error) 
+      # HASURA_GRAPHQL_LOG_LEVEL: 
+
+      # Enable/disable APIs (graphql, metadata, config, etc.)
+      # HASURA_GRAPHQL_ENABLED_APIS: 
+
+      # Stringify numeric types (true/false)
+      # HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES: 
+
+      # Enable Prometheus metrics (true/false)
+      # HASURA_GRAPHQL_ENABLE_METRICS: 
+      
+      # Port for metrics endpoint
+      # HASURA_GRAPHQL_METRICS_PORT: 
+
+      # Event Triggers & Actions :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      # HTTP pool size for event triggers
+      # HASURA_GRAPHQL_EVENTS_HTTP_POOL_SIZE: 
+
+      # Base URL for actions
+      # HASURA_GRAPHQL_ACTIONS_HANDLER_WEBHOOK_BASEURL: 
+
+      # Event fetch batch size
+      # HASURA_GRAPHQL_EVENTS_FETCH_BATCH_SIZE: 
+
+      # Event fetch interval in milliseconds
+      # HASURA_GRAPHQL_EVENTS_FETCH_INTERVAL: 
+
+      # WebSocket & Subscriptions ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      # Read cookies in WebSocket (true/false)
+      # HASURA_GRAPHQL_WS_READ_COOKIE: 
+
+      # WebSocket connection timeout
+      # HASURA_GRAPHQL_CONNECTION_INIT_TIMEOUT: 
+      
+      # Remote Schemas :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      # Timeout for remote schema calls
+      # HASURA_GRAPHQL_REMOTE_SCHEMA_TIMEOUT: 
+
+      # Testing & Development :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      # Enable telemetry (true/false)
+      # HASURA_GRAPHQL_ENABLE_TELEMETRY: 
+
+      # Enable test mode (true/false)
+      # HASURA_GRAPHQL_TEST_MODE: 
+
     networks:
       - hasura-network
 
