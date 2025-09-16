@@ -3,3 +3,6 @@ HASURA :
 
 -> Check below url for accessing Hasura Docs and understanding about the service in detail.
 https://hasura.io/docs/2.0/index/
+
+Main Points ::
+-> We can achieve everything which can be done through hasura console.
